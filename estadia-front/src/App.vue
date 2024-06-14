@@ -1,5 +1,4 @@
 <script setup>
-// import { AccountCircle } from '@quasar/extras/material-icons'
 </script>
 
   <template>
@@ -17,8 +16,7 @@
 
       <q-tabs align="center" active-color="blue-grey-8" indicator-color="blue-grey-9">
         <q-route-tab to="/admin" label="Clientes" />
-        <q-route-tab to="/about" label="Registrar" />
-        <!-- <q-route-tab to="/admin/cliente/2" label="Mi Info" /> -->
+        <q-route-tab to="/registro" label="Registrar" />
       </q-tabs>
     </q-header>
 

@@ -11,14 +11,14 @@
                   :color="!editmode ? 'secondary' : 'accent'"
                   :label="!editmode ? 'Editar' : 'Guardar'"
                   :disable="editmode && isError"
-                  @click="!editmode ? toggleEditmode() : updateClientData()"/>
+                  @click="!editmode ? toggleEditmode() : toggleModal()"/>
               </q-card-section>
             
               <q-separator dark inset />
             
               <q-card-section>
                 <div class="row justify-center">
-                  <div class="col-11 col-md-5 q-ma-md"  v-for="(item, index) in data" :key="index">
+                  <div class="col-11 col-md-5 q-ma-md"  v-for="(item, index) in props.data" :key="index">
                     <q-input
                       :disable="props.modoRegistro ? !editmode : props.modoRegistro"
                       outlined
@@ -38,11 +38,16 @@
                   color="secondary"
                   label='Guardar'
                   :disable="isError"
-                  @click="postClient"/>
+                  @click="toggleModal"/>
               </q-card-section>
             </q-card>
           </div>
-         
+          <Modal  :value="showModal"
+                  @confirm="!props.modoRegistro ? postClient() : updateClientData()"
+                  @close="toggleModal"
+                  :title="!props.modoRegistro 
+                    ? '¿Estas seguro que deseas agregar este nuevo cliente?'
+                    : '¿Estas seguro que deseas editar este cliente?'"/>
         </q-page>
       </q-page-container>
     </q-layout>
@@ -50,55 +55,26 @@
 
 <script setup>
 import { ref, computed, reactive, defineProps } from 'vue';
+import Modal from '../components/Modal.vue';
+    const showModal = ref(false);
+    const toggleModal = () => {
+      showModal.value = !showModal.value
+    };
 
-    const props = defineProps({modoRegistro: {
-      type: Boolean,
-      default: false
-    }})
-    const data = reactive([
-      { 
-        value: 'Jairo',
-        label: 'nombre',
-        type: 'text'
+    const props = defineProps({
+      modoRegistro: {
+        type: Boolean,
+        default: false
       },
-      { 
-        value: 'Lopez',
-        label: 'Apellido Materno',
-        type: 'text'
+      nuevo: {
+        type: Boolean,
+        default: false
       },
-      { 
-        value: 'Torres',
-        label: 'Apellido Paterno',
-        type: 'text'
-      },
-      { 
-        value: 34,
-        label: 'Edad',
-        type: 'number'
-      },
-      { 
-        value: 'a@gmail.com',
-        label: 'Email',
-        type: 'email'
-      },
-      { 
-        value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        label: 'Descripcion',
-        type: 'textarea'
-      },
-      { 
-        value: 5572151955,
-        label: 'Teléfono',
-        type: 'number'
-      },
-      { 
-        value: new Date(2023,11,31).toISOString().split('T')[0],
-        label: 'Fecha de Creación',
-        type: 'date'
-      },
-      
-     
-    ])
+      data: {
+        type: Object
+      }
+    })
+    
     const isError = computed(() => {
       // console.log(dataRef.value[0]);
       return dataRef.value.some(item => item.hasError || item.modelValue === '')
@@ -121,16 +97,22 @@ import { ref, computed, reactive, defineProps } from 'vue';
     const updateClientData = () => {
       console.log('data updated:');
       toggleEditmode()
+      toggleModal()
     };
 
     const postClient = () => {
-      console.log('data updated:')
+      if(props.nuevo){
+        console.log('data postClient:')
+      } else {
+        console.log('data updated:')
+      }
       clearClient()
+      toggleModal()
     };
 
     const clearClient = () => {
-      console.log('data updated:', data[0]);
-      data.forEach( item => item.value = '')
+      console.log('data updated:', props.data[0]);
+      props.data.forEach( item => item.value = '')
     };
 
     const getRules = (item) => {

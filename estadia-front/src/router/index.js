@@ -5,11 +5,11 @@ export default createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../views/About.vue'),
+      component: () => import('../views/LoginView.vue'),
     },
     {
-      path: '/about',
-      component: () => import('../views/About.vue'),
+      path: '/registro',
+      component: () => import('../views/Registro.vue'),
     },
     {
       path: '/admin',

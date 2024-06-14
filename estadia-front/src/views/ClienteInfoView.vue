@@ -2,7 +2,7 @@
   <q-layout class="mainContainer">
       <q-page-container>
         <q-page>
-          <ClienteData :modo-registro="false"/>
+          <ClienteData :modo-registro="true" :data="data"/>
           <div class=" q-mb-xl q-py-md bg-grey-9 text-white row justify-center">
             <q-timeline dark color="secondary" side="right" class="timeline">
               <q-timeline-entry heading>Estado del cliente</q-timeline-entry>
@@ -25,7 +25,6 @@
                   label= 'Agregar estado'
                   @click="toggleAddingState"/>
             
-              <!-- <q-timeline-entry heading>November, 2017</q-timeline-entry> -->
             </q-timeline>
           </div>
           
@@ -55,7 +54,7 @@
                     <q-btn 
                       flat
                       :disable="addingEmpty"
-                      @click="postState">Guardar</q-btn>
+                      @click="toggleModal">Guardar</q-btn>
                       <q-btn 
                       flat
                       @click="toggleAddingState">Cancelar</q-btn>
@@ -64,25 +63,22 @@
             
             </q-card>
           </div>
-
+          <Modal  :value="showModal"
+                  @confirm="postState"
+                  @close="toggleModal"
+                  title="¿Estas seguro que deseas agregar este nuevo estado?"/>
           
         </q-page>
       </q-page-container>
     </q-layout>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive, computed } from 'vue';
-import ClienteData from '../components/ClienteData.vue'; // Ajusta la ruta según tu estructura de archivos
+import ClienteData from '../components/ClienteData.vue';
+import Modal from '../components/Modal.vue';
 
-export default {
-  name: 'ClienteInfoView',
-  components: {
-    ClienteData,
-  },
-  setup() {
-
-    const data = [
+    const data = reactive([
       { 
         value: 'Jairo',
         label: 'nombre',
@@ -116,7 +112,7 @@ export default {
       { 
         value: 5572151955,
         label: 'Teléfono',
-        type: 'tel'
+        type: 'number'
       },
       { 
         value: new Date(2023,11,31).toISOString().split('T')[0],
@@ -125,7 +121,7 @@ export default {
       },
       
      
-    ]
+    ])
     const events = [
       {
         title: 'Evento nuevo',
@@ -154,6 +150,7 @@ export default {
 
     ]
     const addingState = ref(false);
+    const showModal = ref(false);
 
     const newState = reactive({
       titulo: '',
@@ -165,28 +162,19 @@ export default {
       newState.titulo = ''
       newState.descripcion = ''
     };
+    const toggleModal = () => {
+      showModal.value = !showModal.value
+    };
 
     const postState = () => {
       console.log('post state');
       toggleAddingState()
+      toggleModal()
     };
     const addingEmpty = computed(() => {
       return newState.titulo === '' || newState.descripcion === ''  ? true : false
     })
 
-    return {  data, 
-              // editmode, 
-              newState, 
-              events, 
-              addingState,
-              addingEmpty,
-              // toggleEditmode,
-              // updateClientData, 
-              toggleAddingState,
-              postState
-            };
-  },
-};
 </script>
 
 <style scoped>
